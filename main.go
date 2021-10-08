@@ -1,10 +1,14 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"k8skey/services/http"
+	"log"
 	"time"
+
+	"google.golang.org/api/container/v1"
 )
 
 type AllProjects struct {
@@ -42,4 +46,31 @@ func ListProjects() {
 	for _, v := range p.Projects {
 		fmt.Println(v.ProjectID)
 	}
+}
+
+func GetClustersK8s() {
+	ctx := context.Background()
+
+	c, err := google.DefaultClient(ctx, container.CloudPlatformScope)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	containerService, err := container.New(c)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// The parent (project and location) where the clusters will be listed.
+	// Specified in the format 'projects/*/locations/*'.
+	// Location "-" matches all zones and all regions.
+	parent := "projects/ultra-sound-324019/locations/-" // TODO: Update placeholder value.
+
+	resp, err := containerService.Projects.Locations.Clusters.List(parent).Context(ctx).Do()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// TODO: Change code below to process the `resp` object:
+	fmt.Printf("%#v\n", resp)
 }
