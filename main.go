@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"golang.org/x/oauth2/google"
 	"k8skey/services/http"
 	"log"
 	"time"
@@ -29,8 +30,12 @@ func main() {
 
 // ListProjects get all projects to create a database
 func ListProjects() {
+	// Get a key and export to authentication
 	// gcloud auth application-default print-access-token
 	// export GCP_TOKEN="ya29.a0ARrdaM_6DfC..."
+
+	// You can use sub-shell but sometimes gcloud return with update info
+	// export GCP_TOKEN=`gcloud auth application-default print-access-token`
 	url := "https://cloudresourcemanager.googleapis.com/v1/projects"
 	b, err := http.GetRequest(url)
 	if err != nil {
@@ -44,11 +49,12 @@ func ListProjects() {
 	}
 
 	for _, v := range p.Projects {
-		fmt.Println(v.ProjectID)
+		fmt.Println("Project:", v.ProjectID)
+		GetClustersK8s(v.ProjectID)
 	}
 }
 
-func GetClustersK8s() {
+func GetClustersK8s(p string) {
 	ctx := context.Background()
 
 	c, err := google.DefaultClient(ctx, container.CloudPlatformScope)
@@ -64,13 +70,16 @@ func GetClustersK8s() {
 	// The parent (project and location) where the clusters will be listed.
 	// Specified in the format 'projects/*/locations/*'.
 	// Location "-" matches all zones and all regions.
-	parent := "projects/ultra-sound-324019/locations/-" // TODO: Update placeholder value.
+	//parent := "projects/ultra-sound-324019/locations/-" // TODO: Update placeholder value.
+	parent := fmt.Sprintf("projects/%s/locations/-", p)
 
 	resp, err := containerService.Projects.Locations.Clusters.List(parent).Context(ctx).Do()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// TODO: Change code below to process the `resp` object:
-	fmt.Printf("%#v\n", resp)
+	//fmt.Printf("%#v\n", resp)
+	for i, c := range resp.Clusters {
+		fmt.Printf("Cluster[%d]: %s - %s\n", i, c.Name, c.Location)
+	}
 }
