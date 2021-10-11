@@ -7,56 +7,71 @@ import (
 	"os"
 )
 
+type Response struct {
+	Clusters []Config `json:"clusters"`
+}
+
 type Config struct {
-	Project string
-	Cluster string
-	Region  string
-	Tags    map[string]string
+	Project string            `json:"project"`
+	Cluster string            `json:"cluster"`
+	Region  string            `json:"region"`
+	Tags    map[string]string `json:"tags"`
 }
 
 func ExportConfig() {
-	c := Config{
-		Project: "localhost",
-		Cluster: "autopilot-gcp-gke",
-		Region:  "us-central1",
-		Tags:    map[string]string{"a": "b"},
+	c := []Config{
+		{
+			Project: "localhost1",
+			Cluster: "autopilot-gcp-gke",
+			Region:  "us-central1",
+			Tags:    map[string]string{"a": "b"},
+		},
+		{
+			Project: "localhost2",
+			Cluster: "autopilot-gcp-gke",
+			Region:  "us-central1",
+			Tags:    map[string]string{"a": "b"},
+		},
+		{
+			Project: "localhost3",
+			Cluster: "autopilot-gcp-gke",
+			Region:  "us-central1",
+			Tags:    map[string]string{"a": "b"},
+		},
+	}
+
+	jSend := Response{
+		Clusters: c,
 	}
 
 	// convert to JSON format
-	bytes, _ := json.Marshal(c)
+	//bytes, _ := json.Marshal(jSend)
+	bytes, _ := json.MarshalIndent(jSend, "", "    ")
 
-	a := map[int][]byte{}
-	for i:=0; i < 3; i++ {
-		a[i] = bytes
-	}
+	fmt.Println(string(bytes))
 
-	Save(a)
+	Save(bytes)
 }
 
 // Save create a data store with all clusters
-func Save(c map[int][]byte) {
-	file := "clusters.db"
+func Save(b []byte) {
+	file := "clusters.json"
 
 	f, err := os.Create(file)
 	defer f.Close()
-
 	if err != nil {
 		log.Println(err)
 	}
 
-	var s []string
-	for i:= 0; i < len(c); i++ {
-		s = append(s, string(c[i]))
-		s = append(s, "\n")
-	}
+	f.Write(b)
 
-	for i, _ := range s {
-		f.WriteString(s[i])
-	}
 }
 
 func ListConfig() {
-	fmt.Println("a", "b")
+
+	data, _ := os.ReadFile("clusters.json")
+	fmt.Println(json.Valid(data))
+
 }
 
 func LoadConfig(p, c string) {
