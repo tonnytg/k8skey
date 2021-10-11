@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
+	"syscall"
 )
 
 type Projects struct {
@@ -31,11 +33,11 @@ func ExportConfig() {
 				Region:  "us-central1",
 				Tags:    map[string]string{"a": "b"},
 			},
-			{
-				Cluster: "autopilot-gcp-gke2",
-				Region:  "us-central1",
-				Tags:    map[string]string{"c": "d"},
-			},
+				{
+					Cluster: "autopilot-gcp-gke2",
+					Region:  "us-central1",
+					Tags:    map[string]string{"c": "d"},
+				},
 			},
 		},
 		{
@@ -79,7 +81,7 @@ func Save(b []byte) {
 func ListConfig() {
 
 	data, _ := os.ReadFile("clusters.json")
-	if ! json.Valid(data) {
+	if !json.Valid(data) {
 		fmt.Println("Error: json file don't have json format")
 		os.Exit(1)
 	}
@@ -87,15 +89,44 @@ func ListConfig() {
 	projects := Projects{}
 	json.Unmarshal(data, &projects)
 	for i, _ := range projects.Projects {
-		fmt.Printf("Project[%d]: %s\n", i,projects.Projects[i].Project)
+		fmt.Printf("Project[%d]: %s\n", i, projects.Projects[i].Project)
 		for j, _ := range projects.Projects[i].Clusters {
-			fmt.Printf("\tCluster[%d]: %s\n", j,projects.Projects[i].Clusters[j].Cluster)
+			fmt.Printf("\tCluster[%d]: %s\n", j, projects.Projects[i].Clusters[j].Cluster)
 		}
 	}
 
-
+	project := projects.Projects[2].Project
+	cluster := projects.Projects[2].Clusters[0].Cluster
+	region := projects.Projects[2].Clusters[0].Region
+	ConnectCluster(project, cluster, region)
 }
 
 func LoadConfig(p, c string) {
 	fmt.Printf("Project: %s\t Cluster: %s\n", p, c)
+}
+
+func ConnectCluster(p, c, r string) {
+
+	arg1 := "container"
+	arg2 := "clusters"
+	arg3 := "get-credentials"
+	arg4 := c // Cluster
+	arg5 := "--region"
+	arg6 := r // region
+	arg7 := "--project"
+	arg8 := p // Project
+
+	binary, lookErr := exec.LookPath("gcloud")
+	if lookErr != nil {
+		panic(lookErr)
+	}
+
+	args := []string{"gcloud", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8}
+
+	env := os.Environ()
+
+	execErr := syscall.Exec(binary, args, env)
+	if execErr != nil {
+		panic(execErr)
+	}
 }
