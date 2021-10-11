@@ -9,7 +9,7 @@ import (
 	"regexp"
 )
 
-func GetRequest(url string) ([]byte, error){
+func GetRequest(url string) ([]byte, error) {
 
 	token := os.Getenv("GCP_TOKEN")
 	if token == "" {
@@ -37,7 +37,7 @@ func GetRequest(url string) ([]byte, error){
 	}
 
 	r := regexp.MustCompile(`20([0-9])`)
-	if ! r.Match([]byte(string(resp.StatusCode))) {
+	if !r.Match([]byte(string(resp.StatusCode))) {
 		fmt.Println("statusCode:", resp.StatusCode)
 	}
 

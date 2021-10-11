@@ -15,7 +15,8 @@ func Menu() {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Choose Project: ")
 		project, _ := reader.ReadString('\n')
-		fmt.Printf("Project: %s\n", project)
+		fmt.Printf("Project: %s", project)
+		fmt.Println("---")
 
 		if project == "\n" {
 			fmt.Println("Project must be value")
@@ -29,7 +30,8 @@ func Menu() {
 		config.ListClusters(project)
 		fmt.Print("Choose Cluster: ")
 		cluster, _ := reader.ReadString('\n')
-		fmt.Printf("Cluster: %s\n", cluster)
+		fmt.Printf("Cluster: %s", cluster)
+		fmt.Println("---")
 
 		p, c := config.GetProjectCluster(project, cluster)
 

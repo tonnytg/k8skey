@@ -80,7 +80,7 @@ func Save(b []byte) {
 
 }
 
-func ListProjects()  {
+func ListProjects() {
 	data, _ := os.ReadFile("clusters.json")
 	if !json.Valid(data) {
 		fmt.Println("Error: json file don't have json format")
@@ -94,7 +94,7 @@ func ListProjects()  {
 	}
 }
 
-func GetProjectCluster(p, c string) (string, string){
+func GetProjectCluster(p, c string) (string, string) {
 
 	data, _ := os.ReadFile("clusters.json")
 	if !json.Valid(data) {
@@ -109,7 +109,6 @@ func GetProjectCluster(p, c string) (string, string){
 	cl := strings.Trim(c, "\n")
 	idpr, _ := strconv.Atoi(pr)
 	idcl, _ := strconv.Atoi(cl)
-
 
 	fmt.Printf("Project[%d]: %s\n", idpr, projects.Projects[idpr].Project)
 	project := projects.Projects[idpr].Project
@@ -142,7 +141,6 @@ func ListClusters(project string) {
 		fmt.Printf("Cluster[%d]: %s\n", j, projects.Projects[id].Clusters[j].Cluster)
 	}
 }
-
 
 func ListConfig() {
 
