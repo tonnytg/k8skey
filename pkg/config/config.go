@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 )
@@ -25,7 +26,10 @@ func ExportConfig() {
 	bytes, _ := json.Marshal(c)
 
 	a := map[int][]byte{}
-	a[0] = bytes
+	for i:=0; i < 3; i++ {
+		a[i] = bytes
+	}
+
 	Save(a)
 }
 
@@ -35,11 +39,26 @@ func Save(c map[int][]byte) {
 
 	f, err := os.Create(file)
 	defer f.Close()
+
 	if err != nil {
 		log.Println(err)
 	}
 
+	var s []string
 	for i:= 0; i < len(c); i++ {
-		f.Write(c[i])
+		s = append(s, string(c[i]))
+		s = append(s, "\n")
 	}
+
+	for i, _ := range s {
+		f.WriteString(s[i])
+	}
+}
+
+func ListConfig() {
+	fmt.Println("a", "b")
+}
+
+func LoadConfig(p, c string) {
+	fmt.Printf("Project: %s\t Cluster: %s\n", p, c)
 }
