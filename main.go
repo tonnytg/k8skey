@@ -5,7 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"golang.org/x/oauth2/google"
-	"k8skey/services/http"
+	"k8skey/pkg/config"
+	"k8skey/pkg/http"
 	"log"
 	"time"
 
@@ -24,6 +25,8 @@ type AllProjects struct {
 func main() {
 	fmt.Println("List Projects")
 	ListProjects()
+
+	config.ExportConfig()
 
 	//GetClustersK8s()
 }
