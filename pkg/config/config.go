@@ -8,40 +8,35 @@ import (
 )
 
 type Response struct {
-	Clusters []Config `json:"clusters"`
+	Projects []Project `json:"projects"`
 }
 
-type Config struct {
-	Project string            `json:"project"`
+type Cluster struct {
 	Cluster string            `json:"cluster"`
 	Region  string            `json:"region"`
 	Tags    map[string]string `json:"tags"`
 }
 
+type Project struct {
+	Project  string    `json:"project"`
+	Clusters []Cluster `json:"clusters"`
+}
+
 func ExportConfig() {
-	c := []Config{
+	c := []Project{
 		{
 			Project: "localhost1",
-			Cluster: "autopilot-gcp-gke",
-			Region:  "us-central1",
-			Tags:    map[string]string{"a": "b"},
-		},
-		{
-			Project: "localhost2",
-			Cluster: "autopilot-gcp-gke",
-			Region:  "us-central1",
-			Tags:    map[string]string{"a": "b"},
-		},
-		{
-			Project: "localhost3",
-			Cluster: "autopilot-gcp-gke",
-			Region:  "us-central1",
-			Tags:    map[string]string{"a": "b"},
+			Clusters: []Cluster{{
+				Cluster: "autopilot-gcp-gke",
+				Region:  "us-central1",
+				Tags:    map[string]string{"a": "b"},
+			},
+			},
 		},
 	}
 
 	jSend := Response{
-		Clusters: c,
+		Projects: c,
 	}
 
 	// convert to JSON format
