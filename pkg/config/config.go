@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-type Response struct {
+type Projects struct {
 	Projects []Project `json:"projects"`
 }
 
@@ -27,7 +27,21 @@ func ExportConfig() {
 		{
 			Project: "localhost1",
 			Clusters: []Cluster{{
-				Cluster: "autopilot-gcp-gke",
+				Cluster: "autopilot-gcp-gke1",
+				Region:  "us-central1",
+				Tags:    map[string]string{"a": "b"},
+			},
+			{
+				Cluster: "autopilot-gcp-gke2",
+				Region:  "us-central1",
+				Tags:    map[string]string{"c": "d"},
+			},
+			},
+		},
+		{
+			Project: "localhost2",
+			Clusters: []Cluster{{
+				Cluster: "autopilot-gcp-gke3",
 				Region:  "us-central1",
 				Tags:    map[string]string{"a": "b"},
 			},
@@ -35,7 +49,7 @@ func ExportConfig() {
 		},
 	}
 
-	jSend := Response{
+	jSend := Projects{
 		Projects: c,
 	}
 
@@ -65,7 +79,20 @@ func Save(b []byte) {
 func ListConfig() {
 
 	data, _ := os.ReadFile("clusters.json")
-	fmt.Println(json.Valid(data))
+	if ! json.Valid(data) {
+		fmt.Println("Error: json file don't have json format")
+		os.Exit(1)
+	}
+
+	projects := Projects{}
+	json.Unmarshal(data, &projects)
+	for i, _ := range projects.Projects {
+		fmt.Printf("Project[%d]: %s\n", i,projects.Projects[i].Project)
+		for j, _ := range projects.Projects[i].Clusters {
+			fmt.Printf("\tCluster[%d]: %s\n", j,projects.Projects[i].Clusters[j].Cluster)
+		}
+	}
+
 
 }
 
