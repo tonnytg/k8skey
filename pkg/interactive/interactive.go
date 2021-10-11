@@ -3,13 +3,15 @@ package interactive
 import (
 	"bufio"
 	"fmt"
+	"k8skey/pkg/config"
 	"os"
 )
 
 func Menu() {
 
 	for {
-		//ShowProjects() TODO: Create a function to show all projects
+
+		config.ListProjects()
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Choose Project: ")
 		project, _ := reader.ReadString('\n')
@@ -24,14 +26,19 @@ func Menu() {
 			os.Exit(0)
 		}
 
-		//ShowClusters() TODO: Create a function to show all clusters
+		config.ListClusters(project)
 		fmt.Print("Choose Cluster: ")
 		cluster, _ := reader.ReadString('\n')
 		fmt.Printf("Cluster: %s\n", cluster)
+
+		p, c := config.GetProjectCluster(project, cluster)
 
 		if cluster == "\n" {
 			fmt.Println("Cluster must be value")
 			break
 		}
+		r := "us-central1"
+		config.ConnectCluster(p, c, r)
+		os.Exit(0)
 	}
 }

@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strconv"
+	"strings"
 	"syscall"
 )
 
@@ -78,6 +80,70 @@ func Save(b []byte) {
 
 }
 
+func ListProjects()  {
+	data, _ := os.ReadFile("clusters.json")
+	if !json.Valid(data) {
+		fmt.Println("Error: json file don't have json format")
+		os.Exit(1)
+	}
+
+	projects := Projects{}
+	json.Unmarshal(data, &projects)
+	for i, _ := range projects.Projects {
+		fmt.Printf("Project[%d]: %s\n", i, projects.Projects[i].Project)
+	}
+}
+
+func GetProjectCluster(p, c string) (string, string){
+
+	data, _ := os.ReadFile("clusters.json")
+	if !json.Valid(data) {
+		fmt.Println("Error: json file don't have json format")
+		os.Exit(1)
+	}
+
+	projects := Projects{}
+	json.Unmarshal(data, &projects)
+
+	pr := strings.Trim(p, "\n")
+	cl := strings.Trim(c, "\n")
+	idpr, _ := strconv.Atoi(pr)
+	idcl, _ := strconv.Atoi(cl)
+
+
+	fmt.Printf("Project[%d]: %s\n", idpr, projects.Projects[idpr].Project)
+	project := projects.Projects[idpr].Project
+
+	fmt.Printf("Cluster[%d]: %s\n", idcl, projects.Projects[idpr].Clusters[idcl].Cluster)
+	cluster := projects.Projects[idpr].Clusters[idcl].Cluster
+	return project, cluster
+}
+
+func ListClusters(project string) {
+	data, _ := os.ReadFile("clusters.json")
+	if !json.Valid(data) {
+		fmt.Println("Error: json file don't have json format")
+		os.Exit(1)
+	}
+
+	//id := strconv.Atoi(project)
+	// remove \n
+	p := strings.Trim(project, "\n")
+	// parse string to int
+	id, err := strconv.Atoi(p)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	projects := Projects{}
+	json.Unmarshal(data, &projects)
+
+	for j, _ := range projects.Projects[id].Clusters {
+		fmt.Printf("Cluster[%d]: %s\n", j, projects.Projects[id].Clusters[j].Cluster)
+	}
+}
+
+
 func ListConfig() {
 
 	data, _ := os.ReadFile("clusters.json")
@@ -129,4 +195,6 @@ func ConnectCluster(p, c, r string) {
 	if execErr != nil {
 		panic(execErr)
 	}
+	// Finish
+	os.Exit(0)
 }
