@@ -18,14 +18,16 @@ Example using with interactive menu:
     Fetching cluster endpoint and auth data.
     kubeconfig entry generated for autopilot-cluster-1.
 
-Update Database
+**Update Database**<br />
+This command create a clusters.json file root folder, with projects and clusters information.
 
     --database update
 
-Select Menu
+
+**Select Menu**
 
     --select true
 
-Set Project, Cluster and Region
+**Set Project, Cluster and Region**
 
     --project PROJECT_ID --cluster CLUSTER_ID --region REGION_ID
