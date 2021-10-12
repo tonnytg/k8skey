@@ -17,8 +17,8 @@ type AllProjects struct {
 	} `json:"projects"`
 }
 
-// ListProjects get all projects to create a database
-func ListProjects() {
+// List get all projects to create a database
+func List() {
 	// Get a key and export to authentication
 	// gcloud auth application-default print-access-token
 	// export GCP_TOKEN="ya29.a0ARrdaM_6DfC..."
@@ -37,8 +37,8 @@ func ListProjects() {
 		panic(err)
 	}
 
-	for _, v := range p.Projects {
-		fmt.Println("Project:", v.ProjectID)
+	for i, v := range p.Projects {
+		fmt.Printf("Project[%d]: %s\n", i, v.ProjectID)
 		clusters.GetClustersK8s(v.ProjectID)
 	}
 }

@@ -3,8 +3,9 @@ package cmd
 import (
 	"flag"
 	"fmt"
-	"k8skey/pkg/config"
+	"k8skey/pkg/clusters"
 	"k8skey/pkg/interactive"
+	"k8skey/pkg/projects"
 	"os"
 )
 
@@ -18,7 +19,7 @@ func Flags() {
 	flag.Parse()
 	if *db == "update" {
 		fmt.Println("Updating database of projects and clusters")
-		config.ExportConfig()
+		projects.List()
 		os.Exit(0)
 	}
 
@@ -28,7 +29,7 @@ func Flags() {
 	if *project != "" {
 		if *cluster != "" {
 			if *region != "" {
-				config.ConnectCluster(*project, *cluster, *region)
+				clusters.ConnectCluster(*project, *cluster, *region)
 			} else {
 				os.Exit(1)
 			}
