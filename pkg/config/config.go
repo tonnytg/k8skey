@@ -50,7 +50,14 @@ func ExportConfig(p, c, r string) {
 
 // Save create a data store with all clusters
 func Save(b []byte) {
-	file := "clusters.json"
+
+	dir, err := os.UserHomeDir()
+	err = os.Mkdir(dir + "/.k8skey", 0755)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	file := dir + "/.k8skey/clusters.json"
 
 	f, err := os.Create(file)
 	defer f.Close()
@@ -62,7 +69,10 @@ func Save(b []byte) {
 }
 
 func ListProjectsByFile() {
-	data, _ := os.ReadFile("clusters.json")
+	dir, _ := os.UserHomeDir()
+	file := dir + "/.k8skey/clusters.json"
+
+	data, _ := os.ReadFile(file)
 	if !json.Valid(data) {
 		fmt.Println("Error: json file don't have json format")
 		os.Exit(1)
@@ -77,7 +87,9 @@ func ListProjectsByFile() {
 
 func GetProjectClusterByFile(p, c string) (string, string) {
 
-	data, _ := os.ReadFile("clusters.json")
+	dir, _ := os.UserHomeDir()
+	file := dir + "/.k8skey/clusters.json"
+	data, _ := os.ReadFile(file)
 	if !json.Valid(data) {
 		fmt.Println("Error: json file don't have json format")
 		os.Exit(1)
@@ -100,7 +112,10 @@ func GetProjectClusterByFile(p, c string) (string, string) {
 }
 
 func ListClustersByFile(project string) {
-	data, _ := os.ReadFile("clusters.json")
+
+	dir, _ := os.UserHomeDir()
+	file := dir + "/.k8skey/clusters.json"
+	data, _ := os.ReadFile(file)
 	if !json.Valid(data) {
 		fmt.Println("Error: json file don't have json format")
 		os.Exit(1)
