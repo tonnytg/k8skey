@@ -16,7 +16,6 @@ type Projects struct {
 type Cluster struct {
 	Cluster string            `json:"cluster"`
 	Region  string            `json:"region"`
-	Tags    map[string]string `json:"tags"`
 }
 
 type Project struct {
@@ -29,7 +28,7 @@ func ExportConfig(p, c, r string) {
 	var projects []Project
 	var clusters []Cluster
 
-	clusters = append(clusters, Cluster{Cluster: c, Region: r, Tags: map[string]string{"a": "b"}})
+	clusters = append(clusters, Cluster{Cluster: c, Region: r})
 	projects = append(projects, Project{Project: p, Clusters: clusters})
 
 	d := projects
