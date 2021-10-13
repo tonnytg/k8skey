@@ -37,11 +37,23 @@ func GetClustersK8s(p string) {
 		log.Fatal(err)
 	}
 
+	// TODO: Create a slice of projects to send to ExportConfig
+
+	var projects []config.Project
+	var clusters []config.Cluster
+
+
+
 	//fmt.Printf("%#v\n", resp)
 	for i, c := range resp.Clusters {
 		fmt.Printf("Cluster[%d]: %s - %s\n", i, c.Name, c.Location)
-		config.ExportConfig(p, c.Name, c.Location)
+		clusters = append(clusters, config.Cluster{Cluster: c.Name, Region: c.Location})
 	}
+	fmt.Println()
+	projects = append(projects, config.Project{Project: p, Clusters: clusters})
+	d := projects
+	fmt.Println(d)
+	config.ExportConfig(d)
 }
 
 // ConnectCluster get-credential from cluster, projects and region

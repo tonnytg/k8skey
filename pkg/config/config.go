@@ -23,13 +23,8 @@ type Project struct {
 	Clusters []Cluster `json:"clusters"`
 }
 
-func ExportConfig(p, c, r string) {
+func ExportConfig(projects []Project) {
 
-	var projects []Project
-	var clusters []Cluster
-
-	clusters = append(clusters, Cluster{Cluster: c, Region: r})
-	projects = append(projects, Project{Project: p, Clusters: clusters})
 
 	d := projects
 
@@ -54,7 +49,7 @@ func Save(b []byte) {
 	dir, err := os.UserHomeDir()
 	err = os.Mkdir(dir + "/.k8skey", 0755)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	file := dir + "/.k8skey/clusters.json"
