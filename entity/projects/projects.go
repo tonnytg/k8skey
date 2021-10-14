@@ -51,12 +51,12 @@ func GetProjects() []Project {
 
 	var p []Project
 
-	for i, v := range rough.Projects {
-		fmt.Printf("Project[%d]: %s\n", i, v.ProjectID)
+	for _, v := range rough.Projects {
 		c := clusters.GetClustersK8s(v.ProjectID)
-		p = append(p, Project{Project: v.ProjectID, Clusters: c})
+		if c != nil {
+			p = append(p, Project{Project: v.ProjectID, Clusters: c})
+		}
 	}
 
-	fmt.Println(p)
 	return p
 }
