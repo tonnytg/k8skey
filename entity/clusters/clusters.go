@@ -22,12 +22,12 @@ func GetClustersK8s(project string) []Cluster {
 
 	c, err := google.DefaultClient(ctx, container.CloudPlatformScope)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	containerService, err := container.New(c)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	// The parent (project and location) where the clusters will be listed.
@@ -37,7 +37,7 @@ func GetClustersK8s(project string) []Cluster {
 
 	resp, err := containerService.Projects.Locations.Clusters.List(parent).Context(ctx).Do()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	var clusters []Cluster
