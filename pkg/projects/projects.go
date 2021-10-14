@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"k8skey/pkg/clusters"
+	"k8skey/pkg/config"
 	"k8skey/pkg/http"
 	"time"
 )
@@ -37,8 +38,15 @@ func List() {
 		panic(err)
 	}
 
+	var pr []config.Project
+	var c []config.Cluster
+
 	for i, v := range p.Projects {
 		fmt.Printf("Project[%d]: %s\n", i, v.ProjectID)
-		clusters.GetClustersK8s(v.ProjectID)
+		c = clusters.GetClustersK8s(v.ProjectID)
+		pr = append(pr, config.Project{Project: v.ProjectID, Clusters: c})
 	}
+
+	fmt.Println(pr)
+	config.ExportConfig(pr)
 }
