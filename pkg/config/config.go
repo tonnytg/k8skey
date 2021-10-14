@@ -14,8 +14,6 @@ func ExportConfig() {
 
 	p := projects.GetProjects()
 
-	fmt.Println("Exported:", p)
-
 	jSend := projects.Projects{
 		Projects: p,
 	}
