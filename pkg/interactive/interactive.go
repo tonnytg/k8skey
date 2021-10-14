@@ -34,13 +34,12 @@ func Menu() {
 		fmt.Printf("Cluster: %s", cluster)
 		fmt.Println("---")
 
-		p, c := config.GetProjectClusterByFile(project, cluster)
+		p, c, r := config.GetProjectClusterByFile(project, cluster)
 
 		if cluster == "\n" {
 			fmt.Println("Cluster must be value")
 			break
 		}
-		r := "us-central1"
 		clusters.ConnectCluster(p, c, r)
 		os.Exit(0)
 	}

@@ -64,7 +64,7 @@ func ListProjectsByFile() {
 	}
 }
 
-func GetProjectClusterByFile(p, c string) (string, string) {
+func GetProjectClusterByFile(p, c string) (string, string, string) {
 
 	dir, _ := os.UserHomeDir()
 	file := dir + "/.k8skey/clusters.json"
@@ -87,7 +87,8 @@ func GetProjectClusterByFile(p, c string) (string, string) {
 
 	fmt.Printf("Cluster[%d]: %s\n", idcl, projects.Projects[idpr].Clusters[idcl].Cluster)
 	cluster := projects.Projects[idpr].Clusters[idcl].Cluster
-	return project, cluster
+	region := projects.Projects[idpr].Clusters[idcl].Region
+	return project, cluster, region
 }
 
 func ListClustersByFile(project string) {
