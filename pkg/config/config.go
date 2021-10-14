@@ -3,40 +3,26 @@ package config
 import (
 	"encoding/json"
 	"fmt"
+	"k8skey/entity/projects"
 	"log"
 	"os"
 	"strconv"
 	"strings"
 )
 
-type Projects struct {
-	Projects []Project `json:"projects"`
-}
+func ExportConfig() {
 
-type Cluster struct {
-	Cluster string            `json:"cluster"`
-	Region  string            `json:"region"`
-}
+	p := projects.GetProjects()
 
-type Project struct {
-	Project  string    `json:"project"`
-	Clusters []Cluster `json:"clusters"`
-}
+	fmt.Println("Exported:", p)
 
-func ExportConfig(projects []Project) {
-
-
-	d := projects
-
-	fmt.Println("Exported:", d)
-
-	jSend := Projects{
-		Projects: d,
+	jSend := projects.Projects{
+		Projects: p,
 	}
 
-	// convert to JSON format
-	//bytes, _ := json.Marshal(jSend)
-	bytes, _ := json.MarshalIndent(jSend, "", "    ")
+	// convert string to JSON format
+	//bytes, _ := json.Marshal(jSend) // json format in each line
+	bytes, _ := json.MarshalIndent(jSend, "", "    ") // json format in many lines
 
 	fmt.Println(string(bytes))
 
@@ -73,7 +59,7 @@ func ListProjectsByFile() {
 		os.Exit(1)
 	}
 
-	projects := Projects{}
+	projects := projects.Projects{}
 	json.Unmarshal(data, &projects)
 	for i, _ := range projects.Projects {
 		fmt.Printf("Project[%d]: %s\n", i, projects.Projects[i].Project)
@@ -90,7 +76,7 @@ func GetProjectClusterByFile(p, c string) (string, string) {
 		os.Exit(1)
 	}
 
-	projects := Projects{}
+	projects := projects.Projects{}
 	json.Unmarshal(data, &projects)
 
 	pr := strings.Trim(p, "\n")
@@ -125,7 +111,7 @@ func ListClustersByFile(project string) {
 		fmt.Println(err)
 	}
 
-	projects := Projects{}
+	projects := projects.Projects{}
 	json.Unmarshal(data, &projects)
 
 	for j, _ := range projects.Projects[id].Clusters {

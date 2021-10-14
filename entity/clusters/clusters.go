@@ -5,15 +5,19 @@ import (
 	"fmt"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/container/v1"
-	"k8skey/pkg/config"
 	"log"
 	"os"
 	"os/exec"
 	"syscall"
 )
 
+type Cluster struct {
+	Cluster string `json:"cluster"`
+	Region  string `json:"region"`
+}
+
 // GetClustersK8s get clusters name from project
-func GetClustersK8s(p string) []config.Cluster{
+func GetClustersK8s(project string) []Cluster {
 	ctx := context.Background()
 
 	c, err := google.DefaultClient(ctx, container.CloudPlatformScope)
@@ -29,51 +33,50 @@ func GetClustersK8s(p string) []config.Cluster{
 	// The parent (project and location) where the clusters will be listed.
 	// Specified in the format 'projects/*/locations/*'.
 	// Location "-" matches all zones and all regions.
-	//parent := "projects/ultra-sound-324019/locations/-" // TODO: Update placeholder value.
-	parent := fmt.Sprintf("projects/%s/locations/-", p)
+	parent := fmt.Sprintf("projects/%s/locations/-", project)
 
 	resp, err := containerService.Projects.Locations.Clusters.List(parent).Context(ctx).Do()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// TODO: Create a slice of projects to send to ExportConfig
+	var clusters []Cluster
 
-	var clusters []config.Cluster
-
-	//fmt.Printf("%#v\n", resp)
 	for i, c := range resp.Clusters {
 		fmt.Printf("Cluster[%d]: %s - %s\n", i, c.Name, c.Location)
-		clusters = append(clusters, config.Cluster{Cluster: c.Name, Region: c.Location})
+		clusters = append(clusters, Cluster{Cluster: c.Name, Region: c.Location})
 	}
 	return clusters
 }
 
 // ConnectCluster get-credential from cluster, projects and region
-func ConnectCluster(p, c, r string) {
+func ConnectCluster(project, cluster, region string) {
 
-	arg1 := "container"
-	arg2 := "clusters"
-	arg3 := "get-credentials"
-	arg4 := c // Cluster
-	arg5 := "--region"
-	arg6 := r // region
-	arg7 := "--project"
-	arg8 := p // Project
+	args := []string {
+		"gcloud",			// command gcloud
+		"container",		// arguments of gcloud to connect cluster
+		"clusters",
+		"get-credentials",
+		cluster,
+		"--region",
+		region,
+		"--project",
+		project,
+	}
 
+	// find gcloud on PATH
 	binary, lookErr := exec.LookPath("gcloud")
 	if lookErr != nil {
 		panic(lookErr)
 	}
 
-	args := []string{"gcloud", arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8}
-
 	env := os.Environ()
 
+	// execErr run gcloud with arguments of args
 	execErr := syscall.Exec(binary, args, env)
 	if execErr != nil {
 		panic(execErr)
 	}
-	// Finish
+	// Finish return 0 to no problem
 	os.Exit(0)
 }

@@ -3,7 +3,7 @@ package interactive
 import (
 	"bufio"
 	"fmt"
-	"k8skey/pkg/clusters"
+	"k8skey/entity/clusters"
 	"k8skey/pkg/config"
 	"os"
 )

@@ -3,13 +3,13 @@ package projects
 import (
 	"encoding/json"
 	"fmt"
-	"k8skey/pkg/clusters"
-	"k8skey/pkg/config"
+	"k8skey/entity/clusters"
 	"k8skey/pkg/http"
 	"time"
 )
 
-type AllProjects struct {
+// ProjectsRough used to convert return of API to struct format
+type ProjectsRough struct {
 	Projects []struct {
 		ProjectNumber string    `json:"projectNumber"`
 		ProjectID     string    `json:"projectId"`
@@ -18,8 +18,17 @@ type AllProjects struct {
 	} `json:"projects"`
 }
 
-// List get all projects to create a database
-func List() {
+type Projects struct {
+	Projects []Project
+}
+
+type Project struct {
+	Project  string
+	Clusters []clusters.Cluster
+}
+
+// GetProjects get all projects to create a database
+func GetProjects() []Project {
 	// Get a key and export to authentication
 	// gcloud auth application-default print-access-token
 	// export GCP_TOKEN="ya29.a0ARrdaM_6DfC..."
@@ -32,21 +41,22 @@ func List() {
 		fmt.Println("error:", err)
 	}
 
-	var p AllProjects
+	// like a diamond needs to be cut
+	var rough ProjectsRough
 
-	if err := json.Unmarshal(b, &p); err != nil {
+	// decode return of API to struct format
+	if err := json.Unmarshal(b, &rough); err != nil {
 		panic(err)
 	}
 
-	var pr []config.Project
-	var c []config.Cluster
+	var p []Project
 
-	for i, v := range p.Projects {
+	for i, v := range rough.Projects {
 		fmt.Printf("Project[%d]: %s\n", i, v.ProjectID)
-		c = clusters.GetClustersK8s(v.ProjectID)
-		pr = append(pr, config.Project{Project: v.ProjectID, Clusters: c})
+		c := clusters.GetClustersK8s(v.ProjectID)
+		p = append(p, Project{Project: v.ProjectID, Clusters: c})
 	}
 
-	fmt.Println(pr)
-	config.ExportConfig(pr)
+	fmt.Println(p)
+	return p
 }
